@@ -11,7 +11,7 @@ export class AppService {
 }
 
 async create(data: any): Promise<User> {
-  const user = this.userRepository.create(data);
+  
     return this.userRepository.save(data);
 }
 
