@@ -13,4 +13,7 @@ export class User {
 
     @Column()
     password?: string;
+
+    @Column({ nullable: false, type: "varchar", default: "01815532283" })
+    phone!: number;
 }
