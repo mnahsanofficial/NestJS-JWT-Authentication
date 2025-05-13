@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./user.entity";
 import {Repository} from "typeorm";
+import { response } from 'express';
 
 @Injectable()
 export class AppService {
@@ -18,4 +19,5 @@ async create(data: any): Promise<User> {
 async findOne(condition: any): Promise<User | null> {
     return this.userRepository.findOne({ where: condition });
 }
+
 }

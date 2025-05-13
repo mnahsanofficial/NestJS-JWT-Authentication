@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {User} from "./user.entity";
 import { JwtModule } from '@nestjs/jwt';
+import { OpenAiService } from './openai.service';
+import { UserRequest } from './user-request.entity';
 
 @Module({
   imports: [
@@ -14,10 +16,10 @@ import { JwtModule } from '@nestjs/jwt';
       username: 'postgres',
       password: 'admin',
       database: 'nest-auth',
-      entities: [User],
+      entities: [User,UserRequest],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User,UserRequest]),
     JwtModule.register({
       secret: 'secret',
       signOptions: {expiresIn: '1d'}
@@ -25,6 +27,7 @@ import { JwtModule } from '@nestjs/jwt';
 
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+     OpenAiService,],
 })
 export class AppModule {}

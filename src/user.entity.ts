@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { UserRequest } from './user-request.entity';
 
 @Entity('users')
 export class User {
@@ -15,5 +16,8 @@ export class User {
     password?: string;
 
     @Column({ nullable: false, type: "varchar", default: "01815532283" })
-    phone!: number;
+    phoneNumber!: number;
+
+    @OneToMany(() => UserRequest, request => request.user)
+    requests: UserRequest[];
 }

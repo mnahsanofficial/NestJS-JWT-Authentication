@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Post,BadRequestException,Res, UnauthorizedException, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post,BadRequestException,Res, UnauthorizedException, Req, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import * as bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { OpenAiService } from './openai.service';
 
 @Controller('api')
 export class AppController {
   constructor(private readonly appService: AppService,
+    private readonly openAiService: OpenAiService,
     private jwtService: JwtService
   ) {}
 
@@ -86,6 +88,51 @@ export class AppController {
             message: 'success'
         }
     }
+
+    @Post('text-converter')
+async textConverter(
+  @Req() request: Request,
+  @Body('message') message: string
+) {
+  if (!message) {
+    throw new BadRequestException('Message is required');
+  }
+
+  try {
+    const cookie = request.cookies['jwt'];
+    const data = await this.jwtService.verifyAsync(cookie);
+    
+    if (!data) {
+      throw new UnauthorizedException();
+    }
+
+    const result = await this.openAiService.getResponseFromOpenAi(data.id, message);
+    const remaining = await this.openAiService.getRemainingRequests(data.id);
+      
+    return { success: true, data: result,remaining };
+  } catch (error) {
+    throw error;
+  }
+}
+
+@Get('remaining-requests')
+async getRemainingRequests(@Req() request: Request) {
+  try {
+    const cookie = request.cookies['jwt'];
+    const data = await this.jwtService.verifyAsync(cookie);
+    
+    if (!data) {
+      throw new UnauthorizedException();
+    }
+
+    const remaining = await this.openAiService.getRemainingRequests(data.id);
+    return { remaining };
+  } catch (error) {
+    throw new UnauthorizedException();
+  }
+}
+   
+
 
 
 
